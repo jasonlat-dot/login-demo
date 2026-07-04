@@ -147,24 +147,21 @@ function triggerLoginError() {
   position: relative;
   width: 100%;
   max-width: 460px;
-  animation: cardFloat 6s ease-in-out infinite;
-}
-@keyframes cardFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
+  /* 取消卡片持续浮动,主体保持静止,避免与圆环 / 粒子叠加造成视觉晃动 */
 }
 
+/* 圆环流光保留 - 极慢节奏 + 低饱和度,只作背景肌理不抢视线 */
 .card-glow {
   position: absolute;
   inset: -2px;
   border-radius: 22px;
   background: conic-gradient(
     from 0deg,
-    #8ec5fc, #e0c3fc, #fbc2eb, #84fab0, #8ec5fc
+    #bae6fd, #fed7aa, #fbcfe8, #bbf7d0, #bae6fd
   );
   filter: blur(14px);
-  opacity: 0.55;
-  animation: rotateGlow 8s linear infinite;
+  opacity: 0.4;
+  animation: rotateGlow 24s linear infinite;
   z-index: -1;
 }
 @keyframes rotateGlow {
@@ -173,16 +170,17 @@ function triggerLoginError() {
 
 .card {
   position: relative;
-  background: rgba(20, 22, 50, 0.55);
-  backdrop-filter: blur(22px) saturate(140%);
-  -webkit-backdrop-filter: blur(22px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(186, 230, 253, 0.45);
   border-radius: 20px;
   padding: 32px 32px 28px;
   box-shadow:
-    0 30px 60px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  color: #fff;
+    0 30px 60px -10px rgba(56, 189, 248, 0.2),
+    0 12px 30px -8px rgba(244, 114, 182, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  color: #1e293b;
 }
 
 .card-head h2 {
@@ -192,7 +190,7 @@ function triggerLoginError() {
 }
 .card-head p {
   margin: 6px 0 22px;
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(30, 41, 59, 0.6);
   font-size: 13px;
 }
 
@@ -201,8 +199,8 @@ function triggerLoginError() {
   position: relative;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(186, 230, 253, 0.18);
+  border: 1px solid rgba(186, 230, 253, 0.4);
   border-radius: 12px;
   padding: 4px;
   margin-bottom: 22px;
@@ -213,9 +211,11 @@ function triggerLoginError() {
   bottom: 4px;
   left: 4px;
   width: calc(50% - 4px);
-  background: linear-gradient(120deg, #6a7bff 0%, #a18cd1 100%);
+  background: linear-gradient(120deg, #5eead4 0%, #6ee7b7 45%, #fcd34d 100%);
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(106, 123, 255, 0.45);
+  box-shadow:
+    0 6px 18px rgba(94, 234, 212, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
   transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 .tab-switch .slider.right { transform: translateX(100%); }
@@ -225,13 +225,13 @@ function triggerLoginError() {
   padding: 10px 0;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(30, 41, 59, 0.65);
   font-size: 14px;
   letter-spacing: 4px;
   cursor: pointer;
   transition: color 0.3s;
 }
-.tab-switch .tab-btn.active { color: #fff; font-weight: 600; }
+.tab-switch .tab-btn.active { color: #134e4a; font-weight: 600; }
 
 /* 表单舞台 */
 .form-stage { min-height: 360px; }
@@ -265,8 +265,8 @@ function triggerLoginError() {
   width: 64px; height: 64px; border-radius: 50%;
   display: grid; place-items: center;
   margin: 0 auto 16px;
-  background: linear-gradient(135deg, #84fab0, #6a7bff);
-  box-shadow: 0 10px 22px rgba(106, 123, 255, 0.4);
+  background: linear-gradient(135deg, #34d399, #38bdf8);
+  box-shadow: 0 10px 22px rgba(52, 211, 153, 0.4);
   animation: pop 0.45s cubic-bezier(0.2, 0.8, 0.2, 1.4);
 }
 @keyframes pop {
@@ -276,10 +276,21 @@ function triggerLoginError() {
 .success-box h3 { margin: 0 0 6px; font-size: 18px; }
 .success-box p  { margin: 0 0 22px; color: #666; font-size: 13px; }
 .ok-btn {
+  position: relative;
   width: 100%;
   border-radius: 10px !important;
-  background: linear-gradient(120deg, #6a7bff, #a18cd1) !important;
+  background: linear-gradient(120deg, #5eead4 0%, #6ee7b7 45%, #fcd34d 100%) !important;
   border: none !important;
   color: #fff !important;
+  z-index: 0;
+  overflow: visible;
+  box-shadow: 0 10px 22px rgba(94, 234, 212, 0.4);
+  transition: transform 0.15s ease, box-shadow 0.3s ease, filter 0.3s ease;
 }
+.ok-btn:hover {
+  filter: brightness(1.05) saturate(1.1);
+  box-shadow: 0 14px 28px rgba(94, 234, 212, 0.5);
+  transform: translateY(-1px);
+}
+.ok-btn:active { transform: scale(0.97); }
 </style>

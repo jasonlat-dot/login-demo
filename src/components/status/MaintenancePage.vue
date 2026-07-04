@@ -79,10 +79,10 @@ onBeforeUnmount(() => { timer && clearInterval(timer) })
   display: inline-block;
   margin-left: 6px;
   padding: 2px 10px;
-  background: rgba(142, 197, 252, 0.14);
-  border: 1px solid rgba(142, 197, 252, 0.32);
+  background: rgba(125, 211, 252, 0.35);
+  border: 1px solid rgba(56, 189, 248, 0.55);
   border-radius: 999px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #8ec5fc;
+  color: #0369a1;
 }
 </style>

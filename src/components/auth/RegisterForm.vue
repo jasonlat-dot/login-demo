@@ -80,12 +80,9 @@
     </el-form-item>
 
     <el-form-item class="stagger" style="--i:5">
-      <el-button
-        class="submit-btn"
-        size="large"
-        :loading="loading"
-        @click="handleSubmit"
-      >{{ loading ? '注册中…' : '注 册' }}</el-button>
+      <StreamButton :loading="loading" @click="handleSubmit">
+        {{ loading ? '注册中…' : '注 册' }}
+      </StreamButton>
     </el-form-item>
 
     <div class="alt-tip stagger" style="--i:6">
@@ -97,6 +94,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { User, Lock, Phone, View, Hide } from '@element-plus/icons-vue'
+import StreamButton from '@/components/ui/StreamButton.vue'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
@@ -307,14 +305,14 @@ async function handleSubmit() {
   padding-left: 2px;
   transition: color 0.3s;
 }
-.hint-warn { color: #f6c177; }
-.hint-err  { color: #ff7a8a; }
-.hint-ok   { color: #84fab0; }
+.hint-warn { color: #fbbf24; }
+.hint-err  { color: #f43f5e; }
+.hint-ok   { color: #34d399; }
 
 .alt-tip {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
+  color: rgba(30, 41, 59, 0.65);
   margin-top: 8px;
 }
 
@@ -322,79 +320,57 @@ async function handleSubmit() {
   display: inline-flex; align-items: center;
   padding: 6px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.55);
+  color: rgba(30, 41, 59, 0.55);
   transition: color 0.2s;
 }
-.eye:hover { color: #fff; }
+.eye:hover { color: #0284c7; }
 
 .link {
-  color: #b8c6ff;
+  color: #0ea5e9;
   cursor: pointer;
   transition: color 0.2s;
 }
-.link:hover { color: #fff; text-decoration: underline; }
+.link:hover { color: #0284c7; text-decoration: underline; }
 
 :deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.06) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   border-radius: 10px !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
+  box-shadow: 0 0 0 1px rgba(186, 230, 253, 0.6) inset !important;
   transition: all 0.3s ease !important;
   padding: 4px 12px !important;
 }
 :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28) inset !important;
+  box-shadow: 0 0 0 1px rgba(125, 211, 252, 0.85) inset !important;
 }
 :deep(.el-input__wrapper.is-focus) {
   box-shadow:
-    0 0 0 1px #8ab4ff inset,
-    0 0 0 4px rgba(138, 180, 255, 0.18),
-    0 0 18px rgba(138, 180, 255, 0.35) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+    0 0 0 1px #38bdf8 inset,
+    0 0 0 4px rgba(56, 189, 248, 0.16),
+    0 0 18px rgba(56, 189, 248, 0.25) !important;
+  background: rgba(255, 255, 255, 1) !important;
 }
 :deep(.el-input__inner) {
-  color: #fff !important;
+  color: #1e293b !important;
   height: 42px;
   font-size: 14px;
 }
-:deep(.el-input__inner::placeholder) { color: rgba(255, 255, 255, 0.45); }
+:deep(.el-input__inner::placeholder) { color: rgba(30, 41, 59, 0.42); }
 :deep(.el-input__prefix .el-icon),
-:deep(.el-input__suffix .el-icon) { color: rgba(255, 255, 255, 0.55); }
+:deep(.el-input__suffix .el-icon) { color: rgba(30, 41, 59, 0.55); }
 
 :deep(.el-form-item__error) {
-  color: #ff7a8a !important;
+  color: #f43f5e !important;
   font-size: 12px;
   padding-top: 2px;
 }
 
-:deep(.el-checkbox__label) { color: rgba(255, 255, 255, 0.75); }
+:deep(.el-checkbox__label) { color: rgba(30, 41, 59, 0.78); }
 :deep(.el-checkbox__inner) {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(56, 189, 248, 0.5) !important;
 }
 :deep(.el-checkbox.is-checked .el-checkbox__inner) {
-  background: linear-gradient(120deg, #6a7bff, #a18cd1) !important;
+  background: linear-gradient(120deg, #5eead4 0%, #6ee7b7 45%, #fcd34d 100%) !important;
   border-color: transparent !important;
-}
-
-:deep(.submit-btn) {
-  width: 100%;
-  border-radius: 12px !important;
-  border: none !important;
-  height: 46px;
-  font-size: 15px;
-  letter-spacing: 8px;
-  color: #fff !important;
-  background: linear-gradient(120deg, #6a7bff 0%, #a18cd1 60%, #f672ca 100%) !important;
-  box-shadow: 0 10px 24px rgba(122, 110, 255, 0.45);
-  transition: transform 0.15s ease, box-shadow 0.3s ease, filter 0.3s ease;
-}
-:deep(.submit-btn:hover) {
-  filter: brightness(1.08) saturate(1.1);
-  box-shadow: 0 16px 30px rgba(200, 130, 255, 0.55);
-  transform: translateY(-1px);
-}
-:deep(.submit-btn:active) {
-  transform: scale(0.97);
-  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.4);
 }
 </style>
