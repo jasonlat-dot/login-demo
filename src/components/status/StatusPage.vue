@@ -96,10 +96,10 @@ const glowBg = computed(
 
 .theme-light.status-page {
   background:
-    radial-gradient(1200px 800px at 8% 10%, rgba(165, 180, 252, 0.55) 0%, transparent 60%),
-    radial-gradient(1000px 700px at 92% 90%, rgba(251, 207, 232, 0.55) 0%, transparent 60%),
-    radial-gradient(900px 600px at 55% 50%, rgba(167, 243, 208, 0.42) 0%, transparent 70%),
-    linear-gradient(135deg, #f8faff 0%, #f5f0ff 50%, #fff5f7 100%);
+    radial-gradient(1200px 800px at 8% 10%, rgba(186, 230, 253, 0.55) 0%, transparent 60%),
+    radial-gradient(1000px 700px at 92% 90%, rgba(254, 215, 170, 0.55) 0%, transparent 60%),
+    radial-gradient(900px 600px at 55% 50%, rgba(187, 247, 208, 0.45) 0%, transparent 70%),
+    linear-gradient(135deg, #fffaf0 0%, #f0f9ff 50%, #fef3e8 100%);
 }
 
 .status-main {
@@ -117,22 +117,18 @@ const glowBg = computed(
   position: relative;
   width: 100%;
   padding: 44px 36px 36px;
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(22px) saturate(160%);
   -webkit-backdrop-filter: blur(22px) saturate(160%);
-  border: 1px solid rgba(165, 180, 252, 0.4);
+  border: 1px solid rgba(186, 230, 253, 0.45);
   border-radius: 22px;
   box-shadow:
-    0 30px 60px -10px rgba(122, 110, 255, 0.22),
-    0 12px 30px -8px rgba(122, 110, 255, 0.18),
+    0 30px 60px -10px rgba(56, 189, 248, 0.2),
+    0 12px 30px -8px rgba(244, 114, 182, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.95);
-  color: #1e1b4b;
+  color: #1e293b;
   text-align: center;
-  animation: cardFloat 6s ease-in-out infinite;
-}
-@keyframes cardFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
+  /* 卡片主体保持完全静止,避免多频运动叠加造成视觉晃动 */
 }
 
 /* ===== 顶部插画(emoji + 大号 code + 光晕) ===== */
@@ -150,23 +146,26 @@ const glowBg = computed(
   border-radius: 50%;
   filter: blur(34px);
   opacity: 0.7;
-  animation: pulse 3.4s ease-in-out infinite;
+  /* 光晕呼吸放缓 + 缩放幅度减小,避免和卡片形成节拍冲突 */
+  animation: pulse 8s ease-in-out infinite;
 }
 @keyframes pulse {
-  0%, 100% { transform: scale(1);   opacity: 0.7; }
-  50%      { transform: scale(1.12); opacity: 0.45; }
+  0%, 100% { transform: scale(1);    opacity: 0.65; }
+  50%      { transform: scale(1.05); opacity: 0.45; }
 }
 
 .illu-icon {
   position: relative;
   font-size: 64px;
   line-height: 1;
-  filter: drop-shadow(0 6px 18px rgba(0, 0, 0, 0.35));
-  animation: bob 4s ease-in-out infinite;
+  filter: drop-shadow(0 6px 18px rgba(99, 102, 241, 0.25));
+  /* 主体 emoji 静止,只在入场时一次入场动画 */
+  animation: illuIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
-@keyframes bob {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-6px); }
+@keyframes illuIn {
+  0%   { opacity: 0; transform: scale(0.6) translateY(8px); }
+  60%  { opacity: 1; transform: scale(1.06) translateY(-2px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
 }
 
 .illu-code {
@@ -181,7 +180,7 @@ const glowBg = computed(
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 28px rgba(165, 180, 252, 0.45);
+  text-shadow: 0 0 28px rgba(125, 211, 252, 0.4);
 }
 
 /* ===== 文案 ===== */
@@ -190,7 +189,7 @@ const glowBg = computed(
   font-size: 26px;
   font-weight: 700;
   letter-spacing: 1px;
-  color: #1e1b4b;
+  color: #1e293b;
 }
 .status-desc {
   margin: 0 0 24px;
@@ -214,6 +213,7 @@ const glowBg = computed(
   margin-bottom: 18px;
 }
 .status-btn {
+  position: relative;
   min-width: 132px;
   height: 44px;
   padding: 0 22px;
@@ -223,29 +223,41 @@ const glowBg = computed(
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.3s ease, filter 0.3s ease, background 0.3s ease;
   border: 1px solid transparent;
+  z-index: 0;
+  overflow: visible;
 }
 .btn-primary {
-  color: #fff;
-  background: linear-gradient(120deg, #6366f1 0%, #a855f7 60%, #ec4899 100%);
-  box-shadow: 0 10px 24px rgba(99, 102, 241, 0.45);
+  /* 默认静态: 浅色填充 + 深色文字,无荧光、无动画、无 conic 边框 */
+  background: linear-gradient(135deg, #f0f9ff 0%, #ede9fe 100%);
+  color: #312e81;
+  border: 1px solid rgba(99, 102, 241, 0.18);
+  box-shadow: 0 4px 14px -4px rgba(99, 102, 241, 0.22);
+  font-weight: 600;
+  letter-spacing: 4px;
 }
 .btn-primary:hover {
-  filter: brightness(1.05) saturate(1.1);
-  box-shadow: 0 16px 30px rgba(168, 85, 247, 0.55);
+  background: linear-gradient(135deg, #e0e7ff 0%, #f5d0fe 100%);
+  border-color: rgba(99, 102, 241, 0.35);
+  box-shadow: 0 8px 20px -4px rgba(99, 102, 241, 0.32);
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: scale(0.97); }
 
 .btn-ghost {
-  color: #1e1b4b;
-  background: rgba(255, 255, 255, 0.7);
-  border-color: rgba(165, 180, 252, 0.55);
+  /* 默认静态 ghost: 白底 + 浅紫细边 */
+  background: rgba(255, 255, 255, 0.92);
+  color: #312e81;
+  border: 1px solid rgba(186, 230, 253, 0.55);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+  font-weight: 600;
+  letter-spacing: 4px;
 }
 .btn-ghost:hover {
-  color: #312e81;
-  background: rgba(255, 255, 255, 0.95);
-  border-color: rgba(99, 102, 241, 0.6);
-  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.22);
+  background: rgba(255, 255, 255, 1);
+  border-color: rgba(165, 180, 252, 0.7);
+  color: #4338ca;
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.18);
+  transform: translateY(-1px);
 }
 .btn-ghost:active { transform: scale(0.97); }
 
@@ -261,8 +273,8 @@ const glowBg = computed(
   padding: 4px 10px;
   font-size: 12px;
   color: rgba(30, 41, 59, 0.7);
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(165, 180, 252, 0.4);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(186, 230, 253, 0.45);
   border-radius: 999px;
 }
 
@@ -270,20 +282,25 @@ const glowBg = computed(
 .status-footer {
   margin-top: 26px;
   font-size: 12px;
-  color: rgba(30, 41, 59, 0.5);
+  color: rgba(30, 41, 59, 0.45);
   letter-spacing: 1px;
 }
 
 /* ===== 入场动画 ===== */
+/* 入场期间使用一次性 cardIn;入场后保持完全静止,让用户的视觉焦点稳定 */
 .status-card {
-  animation:
-    cardIn 0.7s cubic-bezier(0.2, 0.8, 0.2, 1),
-    cardFloat 6s ease-in-out 0.7s infinite;
+  animation: cardIn 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 @keyframes cardIn {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0)    scale(1); }
+  0%   { opacity: 0; transform: translateY(20px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0)    scale(1); }
 }
+
+/* 入场后允许点击的交互反馈,但卡片本身静止 */
+.status-card:hover { box-shadow:
+    0 36px 70px -10px rgba(56, 189, 248, 0.24),
+    0 14px 32px -8px rgba(244, 114, 182, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95); }
 
 @media (max-width: 520px) {
   .status-card { padding: 36px 22px 28px; }
@@ -292,4 +309,5 @@ const glowBg = computed(
   .illu-code   { font-size: 26px; }
   .status-title { font-size: 22px; }
 }
+
 </style>

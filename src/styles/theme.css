@@ -1,0 +1,93 @@
+/* ============================================================
+ * 全局浅色主题 - 在 .auth-page / .status-debug-page 等根容器上
+ * 通过 .theme-light 类来激活。未挂载任何主题类的容器维持默认深色。
+ *
+ * 设计:让奶油白 + 天空蓝 + 蜜桃粉 + 薄荷绿做主调,
+ * 紫色只作为「点缀色」出现(品牌渐变尾部、链接 hover),
+ * 避免画面被薰衣草色统治。
+ * ============================================================ */
+
+.theme-light {
+  /* ===== 基础色 - 奶油白底,完全不偏紫 ===== */
+  --bg-base:        #fafaf7;            /* 页面底色 - 暖瓷白 */
+  --bg-aurora-1:    #bae6fd;            /* 左上光晕(天空蓝) */
+  --bg-aurora-2:    #fed7aa;            /* 右下光晕(蜜桃) */
+  --bg-aurora-3:    #bbf7d0;            /* 中部光晕(薄荷) */
+
+  /* ===== 文字 - 冷灰蓝,不对抗浅底 ===== */
+  --text-strong:    #1e293b;            /* 主文字 - 石板灰 */
+  --text-default:   #334155;
+  --text-muted:     rgba(30, 41, 59, 0.7);
+  --text-subtle:    rgba(30, 41, 59, 0.5);
+  --text-faint:     rgba(30, 41, 59, 0.4);
+
+  /* ===== 玻璃面板 - 中性白玻璃,边框用青色调 ===== */
+  --panel-bg:       rgba(255, 255, 255, 0.72);
+  --panel-bg-deep:  rgba(255, 255, 255, 0.9);
+  --panel-border:   rgba(148, 197, 230, 0.38);     /* 浅天蓝边 */
+  --panel-border-strong: rgba(125, 211, 252, 0.65);
+  --panel-inner:    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  --panel-shadow:
+    0 24px 60px -10px rgba(56, 189, 248, 0.18),    /* 蓝色阴影 */
+    0 8px 24px -8px rgba(244, 114, 182, 0.12),     /* 粉色阴影 */
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+
+  /* ===== 品牌色 - 三色混合渐变(蓝 → 桃 → 粉),紫色仅占 5% ===== */
+  --brand-from:     #bae6fd;            /* 天空 */
+  --brand-via:      #fed7aa;            /* 蜜桃 */
+  --brand-to:       #fbcfe8;            /* 浅粉 */
+  --brand-accent:   #fde68a;            /* 蜜瓜黄 */
+  --brand-mint:     #a7f3d0;            /* 薄荷 */
+  --brand-sky:      #bae6fd;            /* 天空 */
+
+  /* ===== 文字强调色 - 天空蓝(替代紫色) ===== */
+  --link-color:     #0ea5e9;            /* 天空蓝 - 清新 */
+  --link-hover:     #0284c7;            /* 深天空 */
+
+  /* ===== 输入控件 - 全部青色系边框 ===== */
+  --input-bg:       rgba(255, 255, 255, 0.95);
+  --input-border:   rgba(186, 230, 253, 0.6);
+  --input-border-hover: rgba(125, 211, 252, 0.85);
+  --input-border-focus: #38bdf8;
+  --input-text:     #1e293b;
+  --input-placeholder: rgba(30, 41, 59, 0.42);
+  --input-icon:     rgba(30, 41, 59, 0.5);
+  --input-focus-ring: rgba(56, 189, 248, 0.18);
+
+  /* ===== 错误/警告/成功 - 维持暖色语义 ===== */
+  --err-color:      #f43f5e;
+  --warn-color:     #fbbf24;
+  --ok-color:       #34d399;
+
+  /* ===== 阴影 - 蓝色调阴影(替代紫色阴影) ===== */
+  --shadow-sm:      0 4px 10px rgba(56, 189, 248, 0.12);
+  --shadow-md:      0 10px 24px rgba(56, 189, 248, 0.18);
+  --shadow-lg:      0 18px 40px rgba(56, 189, 248, 0.24);
+
+  /* ===== 粒子画布 ===== */
+  --particle-tint:  rgba(56, 189, 248, 0.4);
+}
+
+/* 对未挂主题类的容器,提供一个全局默认(浅色),保证首屏一致 */
+:root {
+  --bg-base:        #fafaf7;
+  --text-strong:    #1e293b;
+  --text-default:   #334155;
+  --shadow-sm:      0 4px 10px rgba(56, 189, 248, 0.12);
+  --link-color:     #0ea5e9;
+}
+
+/* ============================================================
+ * 全局动效降级 - 当用户开启系统「减少动效」偏好时
+ * 自动禁用所有持续循环动画,只保留入场 / 交互反馈的瞬时过渡
+ * ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

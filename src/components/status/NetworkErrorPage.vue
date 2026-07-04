@@ -58,8 +58,8 @@ onMounted(() => {
   flex-direction: column;
   gap: 6px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.7);
-  border: 1px solid rgba(165, 180, 252, 0.4);
+  background: rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(186, 230, 253, 0.45);
   border-radius: 10px;
   font-size: 13px;
   color: rgba(30, 41, 59, 0.78);
@@ -71,5 +71,5 @@ onMounted(() => {
   background: rgba(30, 41, 59, 0.25);
 }
 .dot.ok  { background: #10b981; box-shadow: 0 0 8px #34d399; }
-.dot.err { background: #ef4444; box-shadow: 0 0 8px #f87171; }
+.dot.err { background: #f43f5e; box-shadow: 0 0 8px #fb7185; }
 </style>

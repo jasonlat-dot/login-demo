@@ -37,10 +37,10 @@ const actions = [
   display: inline-block;
   margin-left: 6px;
   padding: 2px 8px;
-  background: rgba(165, 180, 252, 0.15);
-  border: 1px solid rgba(165, 180, 252, 0.4);
+  background: rgba(186, 230, 253, 0.28);
+  border: 1px solid rgba(186, 230, 253, 0.5);
   border-radius: 6px;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #4f46e5;
+  color: #0369a1;
 }
 </style>

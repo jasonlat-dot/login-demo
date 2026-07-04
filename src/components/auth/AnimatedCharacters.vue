@@ -615,8 +615,10 @@ onBeforeUnmount(() => {
 .character {
   position: absolute;
   bottom: 0;
-  transition: all 0.7s ease-in-out;
+  /* 角色只在事件触发时变化(睁眼/睁大嘴/摇头),不需要永远过渡 */
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
   transform-origin: bottom center;
+  will-change: transform;
   /* 浅色背景下,角色之间/与背景之间需要一点阴影做切分 */
   filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.18));
 }
@@ -665,7 +667,8 @@ onBeforeUnmount(() => {
 .eyes {
   position: absolute;
   display: flex;
-  transition: all 0.7s ease-in-out;
+  /* 眼球位置移动 = 平滑追踪,但不要慢到产生拖尾感 */
+  transition: left 0.35s ease-out, top 0.35s ease-out, gap 0.35s ease-out;
 }
 
 /* 眼球 */
@@ -702,7 +705,8 @@ onBeforeUnmount(() => {
   height: 4px;
   background: #2d2d2d;
   border-radius: 2px;
-  transition: all 0.7s ease-in-out;
+  /* 形状/位置变化(咧开/紧闭)是离散事件,0.4s 足以,不卡顿 */
+  transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 /* ============ 摇头动画 ============ */
