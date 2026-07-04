@@ -14,7 +14,8 @@
         size="large"
         :prefix-icon="User"
         clearable
-        @blur="triggerValidate('username')"
+        @focus="onFocus('username')"
+        @blur="onBlur('username'); triggerValidate('username')"
         @input="clearFieldErr('username')"
       />
     </el-form-item>
@@ -26,11 +27,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showPwd ? 'text' : 'password'"
-        @blur="triggerValidate('password')"
-        @input="clearFieldErr('password')"
+        @focus="onFocus('password')"
+        @blur="onBlur('password'); triggerValidate('password')"
+        @input="onTypePassword"
       >
         <template #suffix>
-          <span class="eye" @click="showPwd = !showPwd">
+          <span class="eye" @click="togglePwd">
             <el-icon><component :is="showPwd ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -58,7 +60,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { inject, reactive, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { User, Lock, View, Hide } from '@element-plus/icons-vue'
 
@@ -66,6 +68,15 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
 })
 const emit = defineEmits(['submit', 'switch', 'forgot'])
+
+/* ===== 注入动画状态（来自 App.vue） =====
+ * AnimatedCharacters 通过 inject('charState') 监听这些字段 */
+const charState = inject('charState', {
+  focusedField: null,
+  passwordShown: false,
+  passwordLen: 0,
+  isLoginError: false,
+})
 
 const formRef = ref(null)
 const showPwd = ref(false)
@@ -80,6 +91,41 @@ const rules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
 }
+
+/* ===== 焦点同步 → 角色动画 =====
+ * focus/blur 写入 focusedField，角色据此做"对视 / 转头不看"动作 */
+let suppressBlur = false
+function onFocus(field) {
+  if (field === 'password') {
+    suppressBlur = false
+    charState.passwordShown = showPwd.value
+    charState.passwordLen   = form.password.length
+  }
+  charState.focusedField = field
+}
+function onBlur(field) {
+  if (field === 'password' && !suppressBlur) {
+    charState.passwordShown = false
+    charState.passwordLen   = 0
+  }
+  // 防止点眼睛图标瞬间 blur 把动画状态抹掉
+  if (charState.focusedField === field) charState.focusedField = null
+}
+function onTypePassword() {
+  charState.passwordLen = form.password.length
+}
+function togglePwd() {
+  showPwd.value = !showPwd.value
+  suppressBlur = true
+  charState.passwordShown = showPwd.value && charState.focusedField === 'password'
+  charState.passwordLen   = form.password.length
+  // 120ms 后恢复，避免下一次真失焦也被吞掉
+  setTimeout(() => { suppressBlur = false }, 120)
+}
+
+watch(showPwd, (v) => {
+  charState.passwordShown = v && charState.focusedField === 'password'
+})
 
 function triggerValidate(field) {
   formRef.value?.validateField(field)

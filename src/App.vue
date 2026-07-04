@@ -8,7 +8,13 @@
 
     <!-- 主体左右分栏 -->
     <main class="auth-main">
-      <AuthBrand />
+      <div class="brand-stage">
+        <!-- 角色场景（绝对定位覆盖在左列下方，作为装饰动画） -->
+        <AnimatedCharacters class="brand-chars" />
+
+        <!-- 文字品牌内容（前景，位于角色上方） -->
+        <AuthBrand class="brand-foreground" />
+      </div>
 
       <AuthFormCard
         v-model="isLogin"
@@ -26,12 +32,13 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { provide, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 
 import AuthBackground from './components/auth/AuthBackground.vue'
 import AuthBrand      from './components/auth/AuthBrand.vue'
 import AuthFormCard   from './components/auth/AuthFormCard.vue'
+import AnimatedCharacters from './components/auth/AnimatedCharacters.vue'
 import ParticleBackground from './components/ParticleBackground.vue'
 
 /* ===== 业务状态 ===== */
@@ -43,18 +50,40 @@ const successVisible   = ref(false)
 const successTitle     = ref('')
 const successMsg       = ref('')
 
+/* ===== 角色动画共享状态 =====
+ * 由 LoginForm / RegisterForm 通过 inject('charState') 更新，
+ * AnimatedCharacters 监听并驱动眼睛 / 身体 / 摇头等动画。 */
+const charState = reactive({
+  focusedField: null,    // 'username' | 'phone' | 'password' | 'confirm' | null
+  passwordShown: false,  // 任意密码框是否切到明文
+  passwordLen: 0,        // 当前聚焦密码框的内容长度（用于触发"偷看"）
+  isLoginError: false,   // 登录失败时触发摇头动画
+})
+provide('charState', charState)
+
 /* ===== 业务行为 ===== */
 function mockRequest() {
   return new Promise(r => setTimeout(r, 900))
 }
 
+function mockFailRequest() {
+  return new Promise((_, reject) => setTimeout(() => reject(new Error('fail')), 900))
+}
+
 async function onLogin(payload) {
   loginLoading.value = true
   try {
-    await mockRequest()
+    // 演示规则：账号以 "fail" 开头视为登录失败，触发角色摇头动画
+    if (String(payload.username || '').toLowerCase().startsWith('fail')) {
+      await mockFailRequest()
+    } else {
+      await mockRequest()
+    }
     successTitle.value = '登录成功'
     successMsg.value   = `欢迎回来，${payload.username}！即将进入工作台…`
     successVisible.value = true
+  } catch {
+    charState.isLoginError = true
   } finally {
     loginLoading.value = false
   }
@@ -68,6 +97,8 @@ async function onRegister(payload) {
     successMsg.value   = `账号 ${payload.username} 已创建，请前往登录～`
     successVisible.value = true
     isLogin.value = true
+  } catch {
+    charState.isLoginError = true
   } finally {
     registerLoading.value = false
   }
@@ -158,11 +189,43 @@ function handleForgot() {
   padding: var(--s-8) 0;
 }
 
+/* ===== 左列：角色动画 + 文字叠加 ===== */
+.brand-stage {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-chars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  opacity: 0.92;
+  /* 角色在文字下方，可被文字穿透 */
+  z-index: 1;
+}
+
+.brand-foreground {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  pointer-events: none; /* 文字不阻挡鼠标，便于角色继续跟手 */
+}
+
+.brand-foreground :deep(*) {
+  pointer-events: auto;
+}
+
 @media (max-width: 960px) {
   .auth-main {
     grid-template-columns: 1fr;
     gap: var(--s-8);
     padding: var(--s-8) 0;
   }
+  .brand-stage { display: none; } /* 小屏隐藏角色 */
 }
 </style>

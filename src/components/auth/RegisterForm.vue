@@ -14,7 +14,8 @@
         size="large"
         :prefix-icon="User"
         clearable
-        @blur="triggerValidate('username')"
+        @focus="onFocus('username')"
+        @blur="onBlur('username'); triggerValidate('username')"
         @input="clearFieldErr('username')"
       />
     </el-form-item>
@@ -26,7 +27,8 @@
         size="large"
         :prefix-icon="Phone"
         maxlength="11"
-        @blur="triggerValidate('phone')"
+        @focus="onFocus('phone')"
+        @blur="onBlur('phone'); triggerValidate('phone')"
         @input="clearFieldErr('phone')"
       />
     </el-form-item>
@@ -38,11 +40,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showPwd ? 'text' : 'password'"
-        @blur="triggerValidate('password')"
-        @input="clearFieldErr('password')"
+        @focus="onFocus('password')"
+        @blur="onBlur('password'); triggerValidate('password')"
+        @input="onTypePassword"
       >
         <template #suffix>
-          <span class="eye" @click="showPwd = !showPwd">
+          <span class="eye" @click="togglePwd('password')">
             <el-icon><component :is="showPwd ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -57,11 +60,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showConfirm ? 'text' : 'password'"
-        @blur="triggerValidate('confirm')"
-        @input="clearFieldErr('confirm')"
+        @focus="onFocus('confirm')"
+        @blur="onBlur('confirm'); triggerValidate('confirm')"
+        @input="onTypeConfirm"
       >
         <template #suffix>
-          <span class="eye" @click="showConfirm = !showConfirm">
+          <span class="eye" @click="togglePwd('confirm')">
             <el-icon><component :is="showConfirm ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -91,13 +95,22 @@
 </template>
 
 <script setup>
-import { computed, reactive, ref } from 'vue'
+import { computed, inject, reactive, ref, watch } from 'vue'
 import { User, Lock, Phone, View, Hide } from '@element-plus/icons-vue'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
 })
 const emit = defineEmits(['submit', 'switch'])
+
+/* ===== 注入动画状态（来自 App.vue） =====
+ * AnimatedCharacters 通过 inject('charState') 监听这些字段 */
+const charState = inject('charState', {
+  focusedField: null,
+  passwordShown: false,
+  passwordLen: 0,
+  isLoginError: false,
+})
 
 const formRef = ref(null)
 const showPwd = ref(false)
@@ -173,6 +186,49 @@ const confirmHintClass = computed(() => {
   const v = form.confirm
   if (!v) return ''
   return v === form.password ? 'hint-ok' : 'hint-err'
+})
+
+/* ===== 焦点同步 → 角色动画 =====
+ * username/phone 归为 username-mode（紫黑对视）
+ * password/confirm 归为 password-mode（全部转头不看）
+ * 眼睛图标切换 → passwordShown（紫色偷看） */
+let suppressBlur = false
+function onFocus(field) {
+  const isPwd = field === 'password' || field === 'confirm'
+  if (isPwd) {
+    suppressBlur = false
+    const shownNow = field === 'password' ? showPwd.value : showConfirm.value
+    charState.passwordShown = shownNow
+    charState.passwordLen   = (field === 'password' ? form.password : form.confirm).length
+  }
+  charState.focusedField = field
+}
+function onBlur(field) {
+  const isPwd = field === 'password' || field === 'confirm'
+  if (isPwd && !suppressBlur) {
+    charState.passwordShown = false
+    charState.passwordLen   = 0
+  }
+  if (charState.focusedField === field) charState.focusedField = null
+}
+function onTypePassword() { charState.passwordLen = form.password.length }
+function onTypeConfirm()  { charState.passwordLen = form.confirm.length }
+
+function togglePwd(which) {
+  suppressBlur = true
+  if (which === 'password') showPwd.value = !showPwd.value
+  else                      showConfirm.value = !showConfirm.value
+  const isFocusedPwd = charState.focusedField === 'password' || charState.focusedField === 'confirm'
+  const shown = which === 'password' ? showPwd.value : showConfirm.value
+  charState.passwordShown = shown && isFocusedPwd
+  charState.passwordLen   = (which === 'password' ? form.password : form.confirm).length
+  setTimeout(() => { suppressBlur = false }, 120)
+}
+
+watch([showPwd, showConfirm, () => charState.focusedField], () => {
+  const f = charState.focusedField
+  if (f === 'password')      charState.passwordShown = showPwd.value
+  else if (f === 'confirm')  charState.passwordShown = showConfirm.value
 })
 
 function triggerValidate(field) {
