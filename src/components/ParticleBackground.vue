@@ -6,60 +6,70 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 /**
- * 动态粒子背景组件
- * 特性:
- *  - 粒子大小随机
- *  - 缓慢无规则移动
- *  - 粒子相互靠近时产生连线
- *  - 鼠标移入产生吸附/排斥交互
- *  - 粒子半透明不遮挡表单
+ * 动态粒子连线背景 —— 企业克制风格
+ *
+ * 设计约束：
+ *  - 粒子与连线统一使用半透浅灰蓝色，避免光点杂乱刺眼
+ *  - 粒子尺寸偏小（1~2px），数量疏密适中（按面积自适应）
+ *  - 粒子缓慢漂浮 + 近距离自动连线
+ *  - 鼠标附近粒子轻微吸引（极弱、不抢夺交互重心）
+ *  - 整体固定在最底层，仅作为纹理背景
  */
 const canvasRef = ref(null)
 let ctx = null
 let particles = []
 let animationId = null
-let mouse = { x: -9999, y: -9999, active: false }
-let dpr = window.devicePixelRatio || 1
+let dpr = 1
 
-// 配色 - 与页面轻奢商务渐变风格统一
-const COLORS = ['#7c8cff', '#a18cd1', '#fbc2eb', '#84fab0', '#8fd3f4']
+// 鼠标状态（用于粒子轻微吸引）
+const mouse = { x: -9999, y: -9999, active: false }
+
+// 统一配色：浅灰蓝色（slate-300，透明度压低）
+const DOT_COLOR   = 'rgba(148, 163, 184, 0.55)'
+const LINE_COLOR  = 'rgba(148, 163, 184, ALPHA)' // 运行时按距离替换 ALPHA
 
 class Particle {
   constructor(w, h) {
     this.w = w
     this.h = h
-    this.reset()
+    this.reset(true)
   }
 
-  reset() {
+  reset(initial = false) {
     this.x = Math.random() * this.w
     this.y = Math.random() * this.h
-    // 大小随机 - 给整体节奏感
-    this.size = Math.random() * 2.2 + 0.6
-    this.vx = (Math.random() - 0.5) * 0.4
-    this.vy = (Math.random() - 0.5) * 0.4
-    this.color = COLORS[Math.floor(Math.random() * COLORS.length)]
-    this.alpha = Math.random() * 0.5 + 0.4
+    // 尺寸偏小且带轻微随机（1.0 ~ 2.0）
+    this.size = Math.random() * 1.0 + 1.0
+    // 缓慢匀速漂浮
+    const angle = Math.random() * Math.PI * 2
+    const speed = Math.random() * 0.25 + 0.08
+    this.vx = Math.cos(angle) * speed
+    this.vy = Math.sin(angle) * speed
+    if (initial) {
+      this.vx *= 0.4
+      this.vy *= 0.4
+    }
   }
 
   update() {
     this.x += this.vx
     this.y += this.vy
 
-    // 边界反弹
-    if (this.x < 0 || this.x > this.w) this.vx *= -1
-    if (this.y < 0 || this.y > this.h) this.vy *= -1
+    // 边界软回弹
+    if (this.x < 0)  { this.x = 0;  this.vx = -this.vx }
+    if (this.x > this.w) { this.x = this.w;  this.vx = -this.vx }
+    if (this.y < 0)  { this.y = 0;  this.vy = -this.vy }
+    if (this.y > this.h) { this.y = this.h;  this.vy = -this.vy }
 
-    // 鼠标吸附/排斥交互
+    // 鼠标轻微吸引（极弱作用力，不抢交互重心）
     if (mouse.active) {
       const dx = mouse.x - this.x
       const dy = mouse.y - this.y
       const dist = Math.sqrt(dx * dx + dy * dy)
-      if (dist < 150) {
-        const force = (150 - dist) / 150
-        // 排斥效果
-        this.x -= (dx / dist) * force * 1.2
-        this.y -= (dy / dist) * force * 1.2
+      if (dist > 0 && dist < 140) {
+        const force = (140 - dist) / 140 * 0.08
+        this.vx += (dx / dist) * force
+        this.vy += (dy / dist) * force
       }
     }
   }
@@ -67,24 +77,22 @@ class Particle {
   draw() {
     ctx.beginPath()
     ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2)
-    ctx.fillStyle = this.color
-    ctx.globalAlpha = this.alpha
+    ctx.fillStyle = DOT_COLOR
     ctx.fill()
-    ctx.globalAlpha = 1
   }
 }
 
+/** 按面积自适应粒子数量（疏密适中） */
 function initParticles() {
-  // 使用逻辑像素作为粒子坐标基准（ctx 已按 dpr 缩放）
   const w = window.innerWidth
   const h = window.innerHeight
-  // 根据屏幕面积自适应密度
-  const count = Math.min(Math.floor((w * h) / 14000), 120)
+  const count = Math.min(Math.floor((w * h) / 18000), 70)
   particles = Array.from({ length: count }, () => new Particle(w, h))
 }
 
-function drawLines() {
-  const maxDist = 130
+/** 近距离连线（最大距离 + 透明度随距离衰减） */
+function drawConnections() {
+  const maxDist = 120
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
       const a = particles[i]
@@ -93,14 +101,13 @@ function drawLines() {
       const dy = a.y - b.y
       const dist = Math.sqrt(dx * dx + dy * dy)
       if (dist < maxDist) {
+        const alpha = (1 - dist / maxDist) * 0.25
         ctx.beginPath()
         ctx.moveTo(a.x, a.y)
         ctx.lineTo(b.x, b.y)
-        ctx.strokeStyle = a.color
-        ctx.globalAlpha = (1 - dist / maxDist) * 0.35
+        ctx.strokeStyle = LINE_COLOR.replace('ALPHA', alpha.toFixed(3))
         ctx.lineWidth = 0.6
         ctx.stroke()
-        ctx.globalAlpha = 1
       }
     }
   }
@@ -113,18 +120,17 @@ function animate() {
     p.update()
     p.draw()
   })
-  drawLines()
+  drawConnections()
   animationId = requestAnimationFrame(animate)
 }
 
 function resize() {
   const c = canvasRef.value
-  // 使用 CSS 像素作为逻辑坐标系，物理像素通过 dpr 缩放保证清晰
   const w = window.innerWidth
   const h = window.innerHeight
-  c.style.width = w + 'px'
+  c.style.width  = w + 'px'
   c.style.height = h + 'px'
-  c.width = w * dpr
+  c.width  = w * dpr
   c.height = h * dpr
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
   particles.forEach(p => { p.w = w; p.h = h })
@@ -132,9 +138,8 @@ function resize() {
 }
 
 function handleMouseMove(e) {
-  const rect = canvasRef.value.getBoundingClientRect()
-  mouse.x = e.clientX - rect.left
-  mouse.y = e.clientY - rect.top
+  mouse.x = e.clientX
+  mouse.y = e.clientY
   mouse.active = true
 }
 
@@ -145,22 +150,21 @@ function handleMouseLeave() {
 }
 
 onMounted(() => {
+  dpr = window.devicePixelRatio || 1
   ctx = canvasRef.value.getContext('2d')
   resize()
   initParticles()
   animate()
   window.addEventListener('resize', resize)
-  canvasRef.value.addEventListener('mousemove', handleMouseMove)
-  canvasRef.value.addEventListener('mouseleave', handleMouseLeave)
+  window.addEventListener('mousemove', handleMouseMove)
+  window.addEventListener('mouseout', handleMouseLeave)
 })
 
 onBeforeUnmount(() => {
   cancelAnimationFrame(animationId)
   window.removeEventListener('resize', resize)
-  if (canvasRef.value) {
-    canvasRef.value.removeEventListener('mousemove', handleMouseMove)
-    canvasRef.value.removeEventListener('mouseleave', handleMouseLeave)
-  }
+  window.removeEventListener('mousemove', handleMouseMove)
+  window.removeEventListener('mouseout', handleMouseLeave)
 })
 </script>
 
@@ -170,7 +174,8 @@ onBeforeUnmount(() => {
   inset: 0;
   width: 100%;
   height: 100%;
+  /* 粒子层位于最底，仅作纹理，不抢表单重心 */
   z-index: 1;
-  pointer-events: auto; /* 接收鼠标事件用于吸附交互 */
+  pointer-events: none;
 }
 </style>

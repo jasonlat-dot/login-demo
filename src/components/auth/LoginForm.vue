@@ -100,11 +100,9 @@ async function handleSubmit() {
     focusFirstError()
     return
   }
-  // 子组件只负责表单与事件，业务交由父级
   emit('submit', { ...form })
 }
 
-// 默认实现：父级未处理 submit 时给出提示，便于独立使用/调试
 function fallbackOnForgot() {
   ElMessage.warning('请联系管理员或前往找回密码页面～')
 }
@@ -114,11 +112,12 @@ defineExpose({ fallbackOnForgot })
 <style scoped>
 .auth-form { display: flex; flex-direction: column; }
 
+/* ===== 入场：依次平缓淡入 ===== */
 .stagger {
   opacity: 0;
-  transform: translateY(10px);
-  animation: fadeUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-  animation-delay: calc(var(--i) * 60ms + 80ms);
+  transform: translateY(8px);
+  animation: fadeUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation-delay: calc(var(--i) * 50ms + 60ms);
 }
 @keyframes fadeUp {
   to { opacity: 1; transform: translateY(0); }
@@ -133,87 +132,100 @@ defineExpose({ fallbackOnForgot })
 .alt-tip {
   text-align: center;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.65);
-  margin-top: 8px;
+  color: var(--color-text-muted);
+  margin-top: 12px;
 }
 
 .eye {
   display: inline-flex; align-items: center;
   padding: 6px;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.55);
-  transition: color 0.2s;
+  color: var(--color-text-dim);
+  transition: color 0.15s;
 }
-.eye:hover { color: #fff; }
+.eye:hover { color: var(--color-text); }
 
 .link {
-  color: #b8c6ff;
+  color: var(--color-accent);
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.15s;
 }
-.link:hover { color: #fff; text-decoration: underline; }
+.link:hover { color: var(--color-accent-hover); text-decoration: underline; }
 
+/* ===== 输入框：细描边 + 极小范围微弱外发光 ===== */
 :deep(.el-input__wrapper) {
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-radius: 10px !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
-  transition: all 0.3s ease !important;
-  padding: 4px 12px !important;
+  background: rgba(15, 23, 42, 0.4) !important;
+  border-radius: var(--r-md) !important;
+  box-shadow: 0 0 0 1px var(--color-border) inset !important;
+  transition: box-shadow 0.2s ease, background 0.2s ease !important;
+  padding: 2px 12px !important;
 }
 :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.28) inset !important;
+  box-shadow: 0 0 0 1px var(--color-border-strong) inset !important;
 }
+/* 聚焦：细蓝紫描边 + 极小外发光（仅 4px，弱强度） */
 :deep(.el-input__wrapper.is-focus) {
   box-shadow:
-    0 0 0 1px #8ab4ff inset,
-    0 0 0 4px rgba(138, 180, 255, 0.18),
-    0 0 18px rgba(138, 180, 255, 0.35) !important;
-  background: rgba(255, 255, 255, 0.1) !important;
+    0 0 0 1px var(--color-accent) inset,
+    0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+  background: rgba(15, 23, 42, 0.55) !important;
 }
 :deep(.el-input__inner) {
-  color: #fff !important;
-  height: 42px;
+  color: var(--color-text) !important;
+  height: 40px;
   font-size: 14px;
 }
-:deep(.el-input__inner::placeholder) { color: rgba(255, 255, 255, 0.45); }
+:deep(.el-input__inner::placeholder) { color: var(--color-text-dim); }
 :deep(.el-input__prefix .el-icon),
-:deep(.el-input__suffix .el-icon) { color: rgba(255, 255, 255, 0.55); }
+:deep(.el-input__suffix .el-icon) { color: var(--color-text-dim); }
 
+/* ===== 报错柔和浅红 ===== */
 :deep(.el-form-item__error) {
-  color: #ff7a8a !important;
+  color: var(--color-danger) !important;
   font-size: 12px;
-  padding-top: 2px;
+  padding-top: 4px;
 }
 
-:deep(.el-checkbox__label) { color: rgba(255, 255, 255, 0.75); }
+/* ===== 复选框：单色 ===== */
+:deep(.el-checkbox__label) { color: var(--color-text-muted); }
 :deep(.el-checkbox__inner) {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: transparent !important;
+  border-color: var(--color-border-strong) !important;
 }
 :deep(.el-checkbox.is-checked .el-checkbox__inner) {
-  background: linear-gradient(120deg, #6a7bff, #a18cd1) !important;
-  border-color: transparent !important;
+  background: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+:deep(.el-checkbox.is-checked .el-checkbox__label) {
+  color: var(--color-text);
 }
 
+/* ===== 提交按钮：低饱和蓝→蓝紫渐变 + 稳重商务 ===== */
 :deep(.submit-btn) {
   width: 100%;
-  border-radius: 12px !important;
+  border-radius: var(--r-md) !important;
   border: none !important;
-  height: 46px;
-  font-size: 15px;
-  letter-spacing: 8px;
+  height: 42px;
+  font-size: 14px;
+  letter-spacing: 4px;
   color: #fff !important;
-  background: linear-gradient(120deg, #6a7bff 0%, #a18cd1 60%, #f672ca 100%) !important;
-  box-shadow: 0 10px 24px rgba(122, 110, 255, 0.45);
-  transition: transform 0.15s ease, box-shadow 0.3s ease, filter 0.3s ease;
+  background: linear-gradient(90deg, #3B82F6 0%, #6366F1 100%) !important;
+  box-shadow:
+    0 4px 12px rgba(59, 130, 246, 0.28),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset !important;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.25s ease,
+    filter 0.2s ease !important;
 }
 :deep(.submit-btn:hover) {
-  filter: brightness(1.08) saturate(1.1);
-  box-shadow: 0 16px 30px rgba(200, 130, 255, 0.55);
-  transform: translateY(-1px);
+  filter: brightness(1.06);
+  box-shadow:
+    0 8px 20px rgba(99, 102, 241, 0.38),
+    0 1px 0 rgba(255, 255, 255, 0.1) inset !important;
 }
 :deep(.submit-btn:active) {
-  transform: scale(0.97);
-  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.4);
+  transform: scale(0.985);
+  filter: brightness(0.95);
 }
 </style>

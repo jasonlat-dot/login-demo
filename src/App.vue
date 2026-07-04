@@ -3,7 +3,7 @@
     <!-- 背景层 -->
     <AuthBackground />
 
-    <!-- 动态粒子背景（保留原有能力） -->
+    <!-- 极简粒子背景（低密度、慢动、少连线） -->
     <ParticleBackground />
 
     <!-- 主体左右分栏 -->
@@ -44,8 +44,6 @@ const successTitle     = ref('')
 const successMsg       = ref('')
 
 /* ===== 业务行为 ===== */
-
-// 模拟登录/注册请求，可在此替换为真实 API
 function mockRequest() {
   return new Promise(r => setTimeout(r, 900))
 }
@@ -69,7 +67,6 @@ async function onRegister(payload) {
     successTitle.value = '注册成功'
     successMsg.value   = `账号 ${payload.username} 已创建，请前往登录～`
     successVisible.value = true
-    // 注册成功 -> 自动切回登录
     isLogin.value = true
   } finally {
     registerLoading.value = false
@@ -82,8 +79,60 @@ function handleForgot() {
 </script>
 
 <style scoped>
-/* 页面容器与布局 */
+/* ===== 设计令牌：深色商务 SaaS 风格 ===== */
 .auth-page {
+  /* 色板 —— 深商务藏青 + 低饱和蓝紫强调 */
+  --color-bg:          #0F172A;
+  --color-bg-2:        #0B1224;
+
+  /* 卡片表面：需求指定 rgba(30, 41, 59, 0.85) */
+  --color-surface:     rgba(30, 41, 59, 0.85);
+  --color-surface-2:   rgba(15, 23, 42, 0.6);
+
+  --color-border:      rgba(148, 163, 184, 0.14);
+  --border-soft:       rgba(148, 163, 184, 0.08);
+  --color-border-strong:rgba(148, 163, 184, 0.24);
+
+  --color-text:        #E2E8F0;          /* 主文字：纯白偏冷 */
+  --color-text-muted:  #94A3B8;          /* 次要文字：浅灰蓝 */
+  --color-text-dim:    #64748B;          /* 辅助文字：淡灰 */
+
+  /* 提交按钮渐变：低饱和蓝 → 蓝紫（克制商务） */
+  --color-accent:        #3B82F6;
+  --color-accent-2:      #6366F1;
+  --color-accent-hover:  #2563EB;
+  --color-accent-soft:   rgba(59, 130, 246, 0.15);
+
+  --color-danger:      #F87171;          /* 柔和浅红 */
+  --color-success:     #6EE7B7;          /* 淡绿 */
+
+  /* 统一圆角（克制，4/8/12 三档） */
+  --r-sm: 4px;
+  --r-md: 8px;
+  --r-lg: 12px;
+
+  /* 栅格基准 4px */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* 阴影：写实分层投影，厚重感收敛 */
+  --shadow-card:
+    0 1px 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px rgba(0, 0, 0, 0.40),
+    0 2px 6px rgba(0, 0, 0, 0.20);
+  --shadow-card-hover:
+    0 1px 0 rgba(255, 255, 255, 0.05) inset,
+    0 18px 40px rgba(0, 0, 0, 0.48),
+    0 4px 10px rgba(0, 0, 0, 0.24);
+
   position: relative;
   width: 100%;
   min-height: 100vh;
@@ -91,25 +140,29 @@ function handleForgot() {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0f1024;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .auth-main {
   position: relative;
   z-index: 2;
-  width: min(1180px, 92vw);
-  min-height: 640px;
+  width: min(1120px, 92vw);
+  min-height: 600px;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 32px;
+  grid-template-columns: 1.05fr 1fr;
+  gap: var(--s-16); /* 64px —— 栅格统一间距 */
   align-items: center;
+  padding: var(--s-8) 0;
 }
 
 @media (max-width: 960px) {
   .auth-main {
     grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 32px 0;
+    gap: var(--s-8);
+    padding: var(--s-8) 0;
   }
 }
 </style>
