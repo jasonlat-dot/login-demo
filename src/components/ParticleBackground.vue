@@ -21,9 +21,12 @@ let animationId = null
 let mouse = { x: -9999, y: -9999, active: false }
 let dpr = window.devicePixelRatio || 1
 
-// 配色 - 与页面轻奢商务渐变风格统一
-const COLORS = ['#7c8cff', '#a18cd1', '#fbc2eb', '#84fab0', '#8fd3f4']
+// 配色 - 浅色主题:粒子需要偏深的色调才能在白底可见
+const COLORS = ['#6366f1', '#a855f7', '#ec4899', '#0d9488', '#0284c7']
 
+// 透明度基线 - 浅色背景下粒子不能太透明
+const ALPHA_BASE = 0.55
+const ALPHA_JITTER = 0.35
 class Particle {
   constructor(w, h) {
     this.w = w
@@ -39,7 +42,7 @@ class Particle {
     this.vx = (Math.random() - 0.5) * 0.4
     this.vy = (Math.random() - 0.5) * 0.4
     this.color = COLORS[Math.floor(Math.random() * COLORS.length)]
-    this.alpha = Math.random() * 0.5 + 0.4
+    this.alpha = Math.random() * ALPHA_JITTER + ALPHA_BASE
   }
 
   update() {

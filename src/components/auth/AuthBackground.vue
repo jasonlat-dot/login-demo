@@ -18,9 +18,10 @@
   inset: 0;
   z-index: 0;
   background:
-    radial-gradient(1200px 800px at 10% 10%, #1f2253 0%, transparent 60%),
-    radial-gradient(1000px 700px at 90% 90%, #4b1f63 0%, transparent 60%),
-    linear-gradient(135deg, #0b0c1f 0%, #1a1a3a 50%, #2a1a44 100%);
+    radial-gradient(1200px 800px at 10% 10%, rgba(165, 180, 252, 0.55) 0%, transparent 60%),
+    radial-gradient(1000px 700px at 90% 90%, rgba(251, 207, 232, 0.55) 0%, transparent 60%),
+    radial-gradient(900px 600px at 55% 50%, rgba(167, 243, 208, 0.42) 0%, transparent 70%),
+    linear-gradient(135deg, #f8faff 0%, #f5f0ff 50%, #fff5f7 100%);
 }
 
 .bg-aurora {
@@ -37,9 +38,9 @@
   opacity: 0.55;
   animation: floatOrb 18s ease-in-out infinite;
 }
-.orb-1 { width: 480px; height: 480px; background: #6a7bff; top: -120px; left: -120px; }
-.orb-2 { width: 520px; height: 520px; background: #f672ca; bottom: -160px; right: -120px; animation-delay: -6s; }
-.orb-3 { width: 360px; height: 360px; background: #6ee2c1; top: 40%; left: 55%; animation-delay: -12s; opacity: 0.35; }
+.orb-1 { width: 480px; height: 480px; background: #a5b4fc; top: -120px; left: -120px; }
+.orb-2 { width: 520px; height: 520px; background: #fbcfe8; bottom: -160px; right: -120px; animation-delay: -6s; }
+.orb-3 { width: 360px; height: 360px; background: #a7f3d0; top: 40%; left: 55%; animation-delay: -12s; opacity: 0.4; }
 
 @keyframes floatOrb {
   0%, 100% { transform: translate(0, 0) scale(1); }

@@ -51,7 +51,7 @@ const year = computed(() => new Date().getFullYear())
 </script>
 
 <style scoped>
-.brand { color: #fff; }
+.brand { color: #1e1b4b; }
 .brand-inner { padding: 0 12px; }
 
 .brand-badge {
@@ -59,16 +59,18 @@ const year = computed(() => new Date().getFullYear())
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(165, 180, 252, 0.55);
   backdrop-filter: blur(8px);
   border-radius: 999px;
   font-size: 12px;
   letter-spacing: 1px;
+  color: #4338ca;
+  box-shadow: 0 4px 12px rgba(122, 110, 255, 0.12);
 }
 .brand-badge .dot {
   width: 6px; height: 6px; border-radius: 50%;
-  background: #84fab0; box-shadow: 0 0 8px #84fab0;
+  background: #10b981; box-shadow: 0 0 8px #34d399;
 }
 
 .brand-title {
@@ -77,16 +79,17 @@ const year = computed(() => new Date().getFullYear())
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: 1px;
+  color: #1e1b4b;
 }
 .grad-text {
-  background: linear-gradient(120deg, #8ec5fc 0%, #e0c3fc 50%, #fbc2eb 100%);
+  background: linear-gradient(120deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
 .brand-slogan {
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(30, 41, 59, 0.7);
   font-size: 15px;
   line-height: 1.8;
 }
@@ -95,8 +98,8 @@ const year = computed(() => new Date().getFullYear())
   width: 64px; height: 3px;
   border-radius: 3px;
   margin: 18px 0 14px;
-  background: linear-gradient(90deg, #8ec5fc, #e0c3fc, #fbc2eb);
-  box-shadow: 0 0 12px rgba(189, 167, 255, 0.5);
+  background: linear-gradient(90deg, #a5b4fc, #c4b5fd, #fbcfe8);
+  box-shadow: 0 0 12px rgba(165, 180, 252, 0.6);
 }
 
 /* 角色舞台 - 占据原本 features 区域, 高度与右侧 form 输入框区域对齐 */
@@ -110,7 +113,7 @@ const year = computed(() => new Date().getFullYear())
 .brand-footer {
   margin-top: 14px;
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.45);
+  color: rgba(30, 41, 59, 0.5);
   letter-spacing: 1px;
 }
 

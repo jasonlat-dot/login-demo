@@ -617,6 +617,8 @@ onBeforeUnmount(() => {
   bottom: 0;
   transition: all 0.7s ease-in-out;
   transform-origin: bottom center;
+  /* 浅色背景下,角色之间/与背景之间需要一点阴影做切分 */
+  filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.18));
 }
 
 /* 紫色矩形 */

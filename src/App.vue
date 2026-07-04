@@ -1,11 +1,11 @@
 <template>
-  <!-- ====== DEBUG START ====== 调试状态页预览 - 正式开发时删除 DEBUG 标记之间的全部内容即可 ====== -->
-  <div v-if="debugActive && debugComponent" class="status-debug-page">
+  /* ====== DEBUG START ====== 调试状态页预览 - 正式开发时删除 DEBUG 标记之间的全部内容即可 ====== -->
+  <div v-if="debugActive && debugComponent" class="status-debug-page theme-light">
     <component :is="debugComponent" v-bind="debugProps" />
   </div>
   <!-- ====== DEBUG END ====== -->
 
-  <div v-show="!debugActive || !debugComponent" class="auth-page">
+  <div v-show="!debugActive || !debugComponent" class="auth-page theme-light">
     <!-- 背景层 -->
     <AuthBackground />
 
@@ -312,7 +312,16 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #0f1024;
+  background: var(--bg-base);
+}
+
+/* 浅色主题下的整体页面背景 - 在 .theme-light 上叠加柔和渐变 */
+.theme-light.auth-page {
+  background:
+    radial-gradient(1200px 800px at 8% 10%, var(--bg-aurora-1) 0%, transparent 60%),
+    radial-gradient(1000px 700px at 92% 90%, var(--bg-aurora-2) 0%, transparent 60%),
+    radial-gradient(900px 600px at 55% 50%, var(--bg-aurora-3) 0%, transparent 70%),
+    linear-gradient(135deg, #f8faff 0%, #f5f0ff 50%, #fff5f7 100%);
 }
 
 .auth-main {
@@ -341,9 +350,10 @@ onBeforeUnmount(() => {
   position: relative;
   z-index: 1;
   min-height: 100vh;
+  background: var(--bg-base);
 }
 
-/* 浮动调试面板 */
+/* 浮动调试面板 - 浅色玻璃风格 */
 .debug-floating {
   position: fixed;
   right: 18px;
@@ -351,13 +361,15 @@ onBeforeUnmount(() => {
   z-index: 9999;
   width: 320px;
   max-width: calc(100vw - 24px);
-  background: rgba(20, 22, 50, 0.88);
-  backdrop-filter: blur(18px) saturate(140%);
-  -webkit-backdrop-filter: blur(18px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid rgba(165, 180, 252, 0.4);
   border-radius: 14px;
-  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
-  color: #fff;
+  box-shadow:
+    0 18px 40px rgba(122, 110, 255, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95);
+  color: #1e1b4b;
   font-size: 13px;
   overflow: hidden;
   user-select: none;
@@ -367,37 +379,37 @@ onBeforeUnmount(() => {
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  background: linear-gradient(120deg, rgba(106, 123, 255, 0.25), rgba(246, 114, 202, 0.25));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(120deg, rgba(165, 180, 252, 0.45), rgba(251, 207, 232, 0.45));
+  border-bottom: 1px solid rgba(165, 180, 252, 0.35);
 }
-.debug-title { font-weight: 600; letter-spacing: 1px; }
+.debug-title { font-weight: 600; letter-spacing: 1px; color: #1e1b4b; }
 .debug-header-actions { display: flex; gap: 6px; }
 .debug-mini {
   width: 24px; height: 24px;
   display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(165, 180, 252, 0.45);
   border-radius: 6px;
-  color: #fff;
+  color: #1e1b4b;
   font-size: 12px;
   cursor: pointer;
   transition: background 0.2s;
 }
-.debug-mini:hover { background: rgba(255, 255, 255, 0.18); }
+.debug-mini:hover { background: rgba(255, 255, 255, 0.9); }
 
 .debug-body { padding: 12px 14px 14px; }
 .debug-hint {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(30, 41, 59, 0.65);
   margin-bottom: 10px;
 }
 .debug-hint code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #b8c6ff;
-  background: rgba(255, 255, 255, 0.08);
+  color: #4f46e5;
+  background: rgba(165, 180, 252, 0.18);
   padding: 1px 6px;
   border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(165, 180, 252, 0.35);
 }
 
 .debug-grid {
@@ -410,24 +422,26 @@ onBeforeUnmount(() => {
   align-items: center;
   gap: 8px;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(165, 180, 252, 0.4);
   border-radius: 10px;
-  color: #fff;
+  color: #1e1b4b;
   cursor: pointer;
   font-size: 12px;
   letter-spacing: 0.5px;
-  transition: background 0.2s, border-color 0.2s, transform 0.15s;
+  transition: background 0.2s, border-color 0.2s, transform 0.15s, box-shadow 0.2s;
 }
 .debug-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.95);
+  border-color: rgba(165, 180, 252, 0.7);
   transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.2);
 }
 .debug-chip.active {
-  background: linear-gradient(120deg, rgba(106, 123, 255, 0.45), rgba(246, 114, 202, 0.45));
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.4);
+  background: linear-gradient(120deg, rgba(165, 180, 252, 0.55), rgba(251, 207, 232, 0.55));
+  border-color: rgba(99, 102, 241, 0.55);
+  color: #312e81;
+  box-shadow: 0 6px 14px rgba(122, 110, 255, 0.32);
 }
 .chip-icon { font-size: 16px; }
 .chip-label { white-space: nowrap; }
@@ -440,19 +454,19 @@ onBeforeUnmount(() => {
 .debug-link {
   background: none;
   border: none;
-  color: #b8c6ff;
+  color: #6366f1;
   font-size: 12px;
   cursor: pointer;
   padding: 4px 6px;
 }
-.debug-link:hover { color: #fff; text-decoration: underline; }
+.debug-link:hover { color: #4338ca; text-decoration: underline; }
 
 .debug-tips {
   margin-top: 10px;
   padding-top: 8px;
-  border-top: 1px dashed rgba(255, 255, 255, 0.14);
+  border-top: 1px dashed rgba(165, 180, 252, 0.5);
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.72);
+  color: rgba(30, 41, 59, 0.62);
 }
 .debug-tips summary {
   cursor: pointer;
@@ -463,8 +477,8 @@ onBeforeUnmount(() => {
 .debug-tips li { margin: 2px 0; }
 .debug-tips code {
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  color: #b8c6ff;
-  background: rgba(255, 255, 255, 0.08);
+  color: #4f46e5;
+  background: rgba(165, 180, 252, 0.18);
   padding: 0 4px;
   border-radius: 3px;
 }
@@ -478,12 +492,12 @@ onBeforeUnmount(() => {
   width: 42px;
   height: 42px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  background: rgba(20, 22, 50, 0.85);
-  color: #fff;
+  border: 1px solid rgba(165, 180, 252, 0.5);
+  background: rgba(255, 255, 255, 0.85);
+  color: #1e1b4b;
   font-size: 18px;
   cursor: pointer;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 8px 20px rgba(122, 110, 255, 0.3);
   transition: transform 0.2s;
 }
 .debug-reopen:hover { transform: scale(1.08); }
@@ -497,16 +511,17 @@ onBeforeUnmount(() => {
 }
 .debug-toggle {
   padding: 6px 12px;
-  background: rgba(20, 22, 50, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(165, 180, 252, 0.5);
   border-radius: 8px;
-  color: #fff;
+  color: #1e1b4b;
   font-size: 12px;
   cursor: pointer;
   letter-spacing: 1px;
   transition: background 0.2s;
+  box-shadow: 0 4px 12px rgba(122, 110, 255, 0.2);
 }
-.debug-toggle:hover { background: rgba(20, 22, 50, 0.95); }
+.debug-toggle:hover { background: rgba(255, 255, 255, 0.95); }
 
 .debug-fade-enter-active, .debug-fade-leave-active {
   transition: opacity 0.2s, transform 0.2s;

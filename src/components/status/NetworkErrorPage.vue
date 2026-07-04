@@ -58,18 +58,18 @@ onMounted(() => {
   flex-direction: column;
   gap: 6px;
   padding: 12px 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(165, 180, 252, 0.4);
   border-radius: 10px;
   font-size: 13px;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(30, 41, 59, 0.78);
   text-align: left;
 }
 .diag-row { display: flex; align-items: center; gap: 8px; }
 .dot {
   width: 8px; height: 8px; border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(30, 41, 59, 0.25);
 }
-.dot.ok  { background: #84fab0; box-shadow: 0 0 8px #84fab0; }
-.dot.err { background: #ff7a8a; box-shadow: 0 0 8px #ff7a8a; }
+.dot.ok  { background: #10b981; box-shadow: 0 0 8px #34d399; }
+.dot.err { background: #ef4444; box-shadow: 0 0 8px #f87171; }
 </style>
