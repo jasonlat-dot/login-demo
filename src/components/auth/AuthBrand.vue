@@ -16,15 +16,10 @@
 
       <div class="brand-divider anim-up" style="--d:240ms" />
 
-      <ul class="brand-features anim-up" style="--d:320ms">
-        <li v-for="(f, i) in features" :key="i">
-          <i class="feat-icon">{{ f.icon }}</i>
-          <div>
-            <b>{{ f.title }}</b>
-            <span>{{ f.desc }}</span>
-          </div>
-        </li>
-      </ul>
+      <!-- 4 个卡通角色 - 占据左侧 features 区域, 与右侧输入框水平对齐 -->
+      <div class="brand-characters-wrap anim-up" style="--d:320ms">
+        <slot name="characters" />
+      </div>
 
       <div class="brand-footer anim-up" style="--d:400ms">
         © {{ year }} {{ copyright }}. All Rights Reserved.
@@ -57,7 +52,7 @@ const year = computed(() => new Date().getFullYear())
 
 <style scoped>
 .brand { color: #fff; }
-.brand-inner { padding: 24px 12px; }
+.brand-inner { padding: 0 12px; }
 
 .brand-badge {
   display: inline-flex;
@@ -77,8 +72,8 @@ const year = computed(() => new Date().getFullYear())
 }
 
 .brand-title {
-  margin: 22px 0 14px;
-  font-size: 44px;
+  margin: 14px 0 10px;
+  font-size: 40px;
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: 1px;
@@ -99,39 +94,21 @@ const year = computed(() => new Date().getFullYear())
 .brand-divider {
   width: 64px; height: 3px;
   border-radius: 3px;
-  margin: 28px 0;
+  margin: 18px 0 14px;
   background: linear-gradient(90deg, #8ec5fc, #e0c3fc, #fbc2eb);
   box-shadow: 0 0 12px rgba(189, 167, 255, 0.5);
 }
 
-.brand-features {
-  list-style: none; padding: 0; margin: 0;
-  display: grid; gap: 14px;
-}
-.brand-features li {
-  display: flex; align-items: center; gap: 14px;
-  padding: 12px 14px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  backdrop-filter: blur(6px);
-}
-.brand-features .feat-icon {
-  width: 36px; height: 36px;
-  display: grid; place-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  font-size: 18px;
-}
-.brand-features b {
-  display: block; color: #fff; font-size: 14px; font-weight: 600;
-}
-.brand-features span {
-  display: block; color: rgba(255, 255, 255, 0.6); font-size: 12px; margin-top: 2px;
+/* 角色舞台 - 占据原本 features 区域, 高度与右侧 form 输入框区域对齐 */
+.brand-characters-wrap {
+  position: relative;
+  margin: 0;
+  width: 100%;
+  height: 340px;
 }
 
 .brand-footer {
-  margin-top: 36px;
+  margin-top: 14px;
   font-size: 12px;
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 1px;
@@ -149,7 +126,7 @@ const year = computed(() => new Date().getFullYear())
 
 @media (max-width: 960px) {
   .brand { text-align: center; }
-  .brand-features { grid-template-columns: 1fr; }
+  .brand-characters-wrap { display: none; }
   .brand-title { font-size: 32px; }
 }
 </style>

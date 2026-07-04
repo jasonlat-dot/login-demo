@@ -34,6 +34,7 @@
               @submit="(payload) => $emit('login', payload)"
               @switch="onSwitch"
               @forgot="$emit('forgot')"
+              @scene="onScene"
             />
             <RegisterForm
               v-else
@@ -41,6 +42,7 @@
               :loading="registerLoading"
               @submit="(payload) => $emit('register', payload)"
               @switch="onSwitch"
+              @scene="onScene"
             />
           </transition>
         </div>
@@ -69,7 +71,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import LoginForm from './LoginForm.vue'
 import RegisterForm from './RegisterForm.vue'
 import { Check } from '@element-plus/icons-vue'
@@ -92,6 +94,7 @@ const emit = defineEmits([
   'login',
   'register',
   'forgot',
+  'scene',
 ])
 
 const isLogin = computed(() => props.modelValue)
@@ -99,6 +102,41 @@ const isLogin = computed(() => props.modelValue)
 // 子表单触发 switch('login' | 'register') -> 转为布尔 v-model
 function onSwitch(target) {
   emit('update:modelValue', target === 'login')
+  // 切换时重置 scene, 避免上一个表单的状态残留到下一个
+  Object.assign(scene, {
+    typingUsername: false,
+    typingPassword: false,
+    showPassword:   false,
+    passwordLength: 0,
+    loginError:     false,
+    errorKey:       scene.errorKey,
+  })
+}
+
+/* ============ 角色动画场景状态聚合 ============ */
+const scene = reactive({
+  typingUsername: false,
+  typingPassword: false,
+  showPassword:   false,
+  passwordLength: 0,
+  loginError:     false,
+  errorKey:       0,
+})
+
+function onScene(payload) {
+  Object.assign(scene, payload)
+}
+
+/* 把内部 scene 引用暴露给父级, 让父级可以读取/控制(用于触发登录错误动画等) */
+defineExpose({ scene })
+
+/* 外部 (App) 可在登录失败时触发摇头动画 + 角色沮丧表情 */
+function triggerLoginError() {
+  scene.loginError = true
+  scene.errorKey += 1
+  setTimeout(() => {
+    scene.loginError = false
+  }, 2500)
 }
 </script>
 

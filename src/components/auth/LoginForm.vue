@@ -14,7 +14,8 @@
         size="large"
         :prefix-icon="User"
         clearable
-        @blur="triggerValidate('username')"
+        @focus="onUsernameFocus"
+        @blur="onUsernameBlur"
         @input="clearFieldErr('username')"
       />
     </el-form-item>
@@ -26,11 +27,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showPwd ? 'text' : 'password'"
-        @blur="triggerValidate('password')"
-        @input="clearFieldErr('password')"
+        @focus="onPasswordFocus"
+        @blur="onPasswordBlur"
+        @input="onPasswordInput"
       >
         <template #suffix>
-          <span class="eye" @click="showPwd = !showPwd">
+          <span class="eye" @click="toggleShowPwd">
             <el-icon><component :is="showPwd ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -59,13 +61,12 @@
 
 <script setup>
 import { reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
 import { User, Lock, View, Hide } from '@element-plus/icons-vue'
 
 const props = defineProps({
   loading: { type: Boolean, default: false },
 })
-const emit = defineEmits(['submit', 'switch', 'forgot'])
+const emit = defineEmits(['submit', 'switch', 'forgot', 'scene'])
 
 const formRef = ref(null)
 const showPwd = ref(false)
@@ -79,6 +80,49 @@ const form = reactive({
 const rules = {
   username: [{ required: true, message: '请输入账号', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
+}
+
+/* 派发给父组件的角色动画场景状态 */
+function emitScene(extra = {}) {
+  emit('scene', {
+    typingUsername: usernameFocused.value,
+    typingPassword: passwordFocused.value,
+    showPassword:    showPwd.value,
+    passwordLength:  form.password.length,
+    ...extra,
+  })
+}
+
+const usernameFocused = ref(false)
+const passwordFocused = ref(false)
+
+function onUsernameFocus() {
+  usernameFocused.value = true
+  triggerValidate('username')
+  emitScene()
+}
+function onUsernameBlur() {
+  usernameFocused.value = false
+  triggerValidate('username')
+  emitScene()
+}
+function onPasswordFocus() {
+  passwordFocused.value = true
+  triggerValidate('password')
+  emitScene()
+}
+function onPasswordBlur() {
+  passwordFocused.value = false
+  triggerValidate('password')
+  emitScene()
+}
+function onPasswordInput() {
+  clearFieldErr('password')
+  emitScene()
+}
+function toggleShowPwd() {
+  showPwd.value = !showPwd.value
+  emitScene()
 }
 
 function triggerValidate(field) {
@@ -104,11 +148,13 @@ async function handleSubmit() {
   emit('submit', { ...form })
 }
 
-// 默认实现：父级未处理 submit 时给出提示，便于独立使用/调试
-function fallbackOnForgot() {
-  ElMessage.warning('请联系管理员或前往找回密码页面～')
-}
-defineExpose({ fallbackOnForgot })
+/* 暴露给父级 - 用于外部(如 App)主动聚焦输入等场景 */
+defineExpose({
+  focusUsername: () => {
+    const el = formRef.value?.$el?.querySelector('input')
+    el?.focus()
+  },
+})
 </script>
 
 <style scoped>

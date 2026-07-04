@@ -14,8 +14,9 @@
         size="large"
         :prefix-icon="User"
         clearable
-        @blur="triggerValidate('username')"
-        @input="clearFieldErr('username')"
+        @focus="onUsernameFocus"
+        @blur="onUsernameBlur"
+        @input="onUsernameInput"
       />
     </el-form-item>
 
@@ -26,8 +27,9 @@
         size="large"
         :prefix-icon="Phone"
         maxlength="11"
-        @blur="triggerValidate('phone')"
-        @input="clearFieldErr('phone')"
+        @focus="onPhoneFocus"
+        @blur="onPhoneBlur"
+        @input="onPhoneInput"
       />
     </el-form-item>
 
@@ -38,11 +40,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showPwd ? 'text' : 'password'"
-        @blur="triggerValidate('password')"
-        @input="clearFieldErr('password')"
+        @focus="onPasswordFocus"
+        @blur="onPasswordBlur"
+        @input="onPasswordInput"
       >
         <template #suffix>
-          <span class="eye" @click="showPwd = !showPwd">
+          <span class="eye" @click="toggleShowPwd">
             <el-icon><component :is="showPwd ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -57,11 +60,12 @@
         size="large"
         :prefix-icon="Lock"
         :type="showConfirm ? 'text' : 'password'"
-        @blur="triggerValidate('confirm')"
-        @input="clearFieldErr('confirm')"
+        @focus="onConfirmFocus"
+        @blur="onConfirmBlur"
+        @input="onConfirmInput"
       >
         <template #suffix>
-          <span class="eye" @click="showConfirm = !showConfirm">
+          <span class="eye" @click="toggleShowConfirm">
             <el-icon><component :is="showConfirm ? View : Hide" /></el-icon>
           </span>
         </template>
@@ -97,7 +101,7 @@ import { User, Lock, Phone, View, Hide } from '@element-plus/icons-vue'
 const props = defineProps({
   loading: { type: Boolean, default: false },
 })
-const emit = defineEmits(['submit', 'switch'])
+const emit = defineEmits(['submit', 'switch', 'scene'])
 
 const formRef = ref(null)
 const showPwd = ref(false)
@@ -110,6 +114,91 @@ const form = reactive({
   confirm: '',
   agree: false,
 })
+
+/* ===== 角色动画场景状态 (对齐 LoginForm 的语义) ===== */
+const usernameFocused = ref(false)
+const phoneFocused    = ref(false)
+const passwordFocused = ref(false)
+const confirmFocused  = ref(false)
+
+function emitScene(extra = {}) {
+  emit('scene', {
+    typingUsername: usernameFocused.value || phoneFocused.value,
+    typingPassword: passwordFocused.value || confirmFocused.value,
+    showPassword:   showPwd.value || showConfirm.value,
+    passwordLength: (form.password || '').length + (form.confirm || '').length,
+    ...extra,
+  })
+}
+
+function onUsernameFocus() {
+  usernameFocused.value = true
+  triggerValidate('username')
+  emitScene()
+}
+function onUsernameBlur() {
+  usernameFocused.value = false
+  triggerValidate('username')
+  emitScene()
+}
+function onUsernameInput() {
+  clearFieldErr('username')
+  emitScene()
+}
+
+function onPhoneFocus() {
+  phoneFocused.value = true
+  triggerValidate('phone')
+  emitScene()
+}
+function onPhoneBlur() {
+  phoneFocused.value = false
+  triggerValidate('phone')
+  emitScene()
+}
+function onPhoneInput() {
+  clearFieldErr('phone')
+  emitScene()
+}
+
+function onPasswordFocus() {
+  passwordFocused.value = true
+  triggerValidate('password')
+  emitScene()
+}
+function onPasswordBlur() {
+  passwordFocused.value = false
+  triggerValidate('password')
+  emitScene()
+}
+function onPasswordInput() {
+  clearFieldErr('password')
+  emitScene()
+}
+
+function onConfirmFocus() {
+  confirmFocused.value = true
+  triggerValidate('confirm')
+  emitScene()
+}
+function onConfirmBlur() {
+  confirmFocused.value = false
+  triggerValidate('confirm')
+  emitScene()
+}
+function onConfirmInput() {
+  clearFieldErr('confirm')
+  emitScene()
+}
+
+function toggleShowPwd() {
+  showPwd.value = !showPwd.value
+  emitScene()
+}
+function toggleShowConfirm() {
+  showConfirm.value = !showConfirm.value
+  emitScene()
+}
 
 /* 自定义校验 */
 const validatePasswordStrength = (_, value, cb) => {
